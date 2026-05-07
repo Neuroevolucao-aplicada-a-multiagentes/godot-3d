@@ -1,0 +1,28 @@
+[gd_scene format=3 uid="uid://bs72ogkvdd7d6"]
+
+[ext_resource type="Script" uid="uid://8kbrue28wog5" path="res://addons/proto_controller/proto_controller.gd" id="1_ucva2"]
+[ext_resource type="PackedScene" uid="uid://coyjs3kchlxba" path="res://models/robot/mini-robot_blackmikedr.glb" id="2_wr06p"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_iof21"]
+radius = 0.6
+height = 1.2
+
+[node name="ProtoController" type="CharacterBody3D" unique_id=1940682395]
+script = ExtResource("1_ucva2")
+
+[node name="Sketchfab_Scene" parent="." unique_id=612614357 instance=ExtResource("2_wr06p")]
+transform = Transform3D(0.003, 0, 0, 0, 0.003, 0, 0, 0, 0.003, 0.0032998808, 1.2546, -0.0065997466)
+
+[node name="Collider" type="CollisionShape3D" parent="." unique_id=1019764910]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.275, 0)
+shape = SubResource("CapsuleShape3D_iof21")
+
+[node name="Head" type="Node3D" parent="." unique_id=1650350947]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3000001, 0)
+
+[node name="SpringArm3D" type="SpringArm3D" parent="Head" unique_id=1968779529]
+collision_mask = 65535
+spring_length = 4.0
+
+[node name="Camera3D" type="Camera3D" parent="Head/SpringArm3D" unique_id=2052348536]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.8000001)

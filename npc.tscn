@@ -1,0 +1,24 @@
+[gd_scene format=3 uid="uid://d1s2mg62pb0pr"]
+
+[ext_resource type="Script" uid="uid://8kbrue28wog5" path="res://addons/proto_controller/proto_controller.gd" id="1_xxcha"]
+[ext_resource type="PackedScene" uid="uid://coyjs3kchlxba" path="res://models/robot/mini-robot_blackmikedr.glb" id="2_kh24r"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_iof21"]
+radius = 0.6
+height = 1.2
+
+[node name="NPC" type="Node3D" unique_id=102760724]
+
+[node name="ProtoController" type="CharacterBody3D" parent="." unique_id=1940682395]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0, 1.2)
+script = ExtResource("1_xxcha")
+
+[node name="Sketchfab_Scene" parent="ProtoController" unique_id=612614357 instance=ExtResource("2_kh24r")]
+transform = Transform3D(0.003, 0, 0, 0, 0.003, 0, 0, 0, 0.003, 0.0032998808, 1.2546, -0.0065997466)
+
+[node name="Collider" type="CollisionShape3D" parent="ProtoController" unique_id=1019764910]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.275, 0)
+shape = SubResource("CapsuleShape3D_iof21")
+
+[node name="Head" type="Node3D" parent="ProtoController" unique_id=1650350947]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.3000001, 0)
