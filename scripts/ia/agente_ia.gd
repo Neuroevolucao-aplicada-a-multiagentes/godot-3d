@@ -1,0 +1,197 @@
+class_name AgenteIA
+extends CharacterBody3D
+
+# escala inferida do warehouse.tscn: area util ~35x95u, diagonal ~101u
+const DIAGONAL_MAPA := 101.0
+const ALCANCE_RAY := 14.0  # 2.5u corridor wall / 14 ≈ 0.18, alinhado com treino Python
+const NUM_RAYS := 8
+const VELOCIDADE_AGENTE := 8.0
+const DURACAO_CICLO := 45.0
+const CAMINHO_REDE := "res://assets/melhor_rede_fase5.json"
+const COR_GLOW := Color(0.2, 0.8, 1.0)
+const COR_CARREGANDO := Color(1.0, 0.5, 0.0)
+const RAIO_COLETA := 2.0
+
+@export var alvo: Node3D
+@export var zona_entrega: Node3D
+@export var carregando_item: bool = false
+@export var mostrar_debug: bool = false
+
+var rede: RedeNeural
+var tempo_ciclo: float = 0.0
+var itens_entregues: int = 0
+
+var _alvo_pacote: Node3D
+var _raycasts: Array[RayCast3D] = []
+var _ultimo_heading: float = 0.0
+var _mat_glow: StandardMaterial3D
+
+func _ready() -> void:
+	rede = RedeNeural.new()
+	if not rede.carregar(CAMINHO_REDE):
+		push_error("AgenteIA [%s]: falha ao carregar rede neural" % name)
+
+	# layer 2: agentes nao colidem entre si, mas ainda respeitam estaticos (layer 1)
+	collision_layer = 2
+	collision_mask = 1
+
+	for i in NUM_RAYS:
+		var ray := RayCast3D.new()
+		ray.name = "Ray%d" % i
+		ray.enabled = true
+		ray.exclude_parent = true
+		ray.collision_mask = 1
+		ray.target_position = Vector3(ALCANCE_RAY, 0.0, 0.0)
+		add_child(ray)
+		_raycasts.append(ray)
+
+	_criar_visual_glow()
+
+func _criar_visual_glow() -> void:
+	var esfera := SphereMesh.new()
+	esfera.radius = 0.22
+	esfera.height = 0.44
+
+	_mat_glow = StandardMaterial3D.new()
+	_mat_glow.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	_mat_glow.emission_enabled = true
+	_mat_glow.emission = COR_GLOW
+	_mat_glow.emission_energy_multiplier = 5.0
+	_mat_glow.albedo_color = COR_GLOW
+
+	var mesh_inst := MeshInstance3D.new()
+	mesh_inst.mesh = esfera
+	mesh_inst.material_override = _mat_glow
+	mesh_inst.position = Vector3(0.0, 2.1, 0.0)
+	add_child(mesh_inst)
+
+func configurar(pacote: Node3D, entrega: Node3D) -> void:
+	_alvo_pacote = pacote
+	zona_entrega = entrega
+	alvo = _alvo_pacote
+
+func _physics_process(delta: float) -> void:
+	tempo_ciclo += delta
+
+	if not is_on_floor():
+		velocity.y -= 9.8 * delta
+		# sem movimento horizontal ate pousar — impede drift para dentro das prateleiras
+		velocity.x = 0.0
+		velocity.z = 0.0
+		move_and_slide()
+		return
+
+	if rede.w1.is_empty() or alvo == null:
+		move_and_slide()
+		return
+
+	var inputs := _montar_inputs()
+	var output := rede.forward(inputs)
+
+	var vel2d := Vector2(output[0], output[1])
+	if vel2d.length() > 1.0:
+		vel2d = vel2d.normalized()
+
+	velocity.x = vel2d.x * VELOCIDADE_AGENTE
+	velocity.z = vel2d.y * VELOCIDADE_AGENTE
+
+	move_and_slide()
+
+	_verificar_coleta_entrega()
+
+	if mostrar_debug:
+		var adx := alvo.global_position.x - global_position.x
+		var adz := alvo.global_position.z - global_position.z
+		print("AgenteIA[%s] y=%.1f dist2d=%.1f out=(%.3f,%.3f) carr=%s itens=%d" % [
+			name,
+			global_position.y,
+			sqrt(adx * adx + adz * adz),
+			output[0], output[1],
+			str(carregando_item),
+			itens_entregues
+		])
+
+func _verificar_coleta_entrega() -> void:
+	if alvo == null or zona_entrega == null or _alvo_pacote == null:
+		return
+	var dx := alvo.global_position.x - global_position.x
+	var dz := alvo.global_position.z - global_position.z
+	if sqrt(dx * dx + dz * dz) >= RAIO_COLETA:
+		return
+	if not carregando_item:
+		carregando_item = true
+		alvo = zona_entrega
+		if _mat_glow != null:
+			_mat_glow.emission = COR_CARREGANDO
+			_mat_glow.albedo_color = COR_CARREGANDO
+		tempo_ciclo = 0.0
+	else:
+		carregando_item = false
+		itens_entregues += 1
+		alvo = _alvo_pacote
+		if _mat_glow != null:
+			_mat_glow.emission = COR_GLOW
+			_mat_glow.albedo_color = COR_GLOW
+		tempo_ciclo = 0.0
+
+func _montar_inputs() -> Array:
+	var pos := global_position
+	var pos_alvo := alvo.global_position
+
+	var dx := pos_alvo.x - pos.x
+	var dz := pos_alvo.z - pos.z
+	var dist := sqrt(dx * dx + dz * dz)
+	var dir_alvo_x := dx / (dist + 1e-6)
+	var dir_alvo_z := dz / (dist + 1e-6)
+
+	var dx_ent := dir_alvo_x
+	var dz_ent := dir_alvo_z
+	if zona_entrega != null:
+		var pe := zona_entrega.global_position
+		var ddx := pe.x - pos.x
+		var ddz := pe.z - pos.z
+		var de := sqrt(ddx * ddx + ddz * ddz)
+		dx_ent = ddx / (de + 1e-6)
+		dz_ent = ddz / (de + 1e-6)
+
+	var vel_plano := Vector2(velocity.x, velocity.z)
+	var vel_mag := minf(vel_plano.length(), 1.0)
+
+	# heading no plano XZ: equivalente ao atan2(vel.y, vel.x) do pygame
+	var heading: float
+	if vel_plano.length() > 0.01:
+		heading = atan2(velocity.z, velocity.x)
+	else:
+		heading = atan2(dz, dx) if (dx != 0.0 or dz != 0.0) else 0.0
+	_ultimo_heading = heading
+
+	var rays := _get_ray_distances(heading)
+	var tempo_norm := minf(tempo_ciclo / DURACAO_CICLO, 1.0)
+
+	var inputs: Array = [
+		dir_alvo_x,
+		dir_alvo_z,
+		dist / DIAGONAL_MAPA,
+		1.0 if carregando_item else 0.0,
+		dx_ent,
+		dz_ent,
+		vel_mag,
+		tempo_norm,
+	]
+	inputs.append_array(rays)
+	return inputs
+
+func _get_ray_distances(heading: float) -> Array:
+	var distancias: Array = []
+	for i in NUM_RAYS:
+		var ang := heading + (float(i) / NUM_RAYS) * TAU
+		var ray: RayCast3D = _raycasts[i]
+		ray.target_position = Vector3(cos(ang), 0.0, sin(ang)) * ALCANCE_RAY
+		ray.force_raycast_update()
+		var d: float
+		if ray.is_colliding():
+			d = ray.get_collision_point().distance_to(ray.global_position)
+		else:
+			d = ALCANCE_RAY
+		distancias.append(d / ALCANCE_RAY)
+	return distancias
