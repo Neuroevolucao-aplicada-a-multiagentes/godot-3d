@@ -1,16 +1,28 @@
 class_name AgenteIA
 extends CharacterBody3D
 
-# escala inferida do warehouse.tscn: area util ~35x95u, diagonal ~101u
-const DIAGONAL_MAPA := 101.0
-const ALCANCE_RAY := 14.0  # 2.5u corridor wall / 14 ≈ 0.18, alinhado com treino Python
+# Area util apos o realinhamento das fileiras: x ~6..34 (28u),
+# z ~-98..-24 (74u) -> diagonal ~79u.
+#
+# As grandezas abaixo nao sao valores livres: sao as proporcoes fixadas em
+# docs/contrato_ambiente.md do repo de treino. A rede so opera dentro da
+# distribuicao em que foi treinada se a razao com a diagonal for preservada.
+const DIAGONAL_MAPA := 79.0
+const ALCANCE_RAY := DIAGONAL_MAPA * 0.203        # 220 / 1081 no treino
+const VELOCIDADE_AGENTE := DIAGONAL_MAPA * 0.185  # 200 px/s / 1081
+const RAIO_COLETA := DIAGONAL_MAPA * 0.0185       # 20 / 1081
+const RAIO_ENTREGA := DIAGONAL_MAPA * 0.0324      # 35 / 1081
+
 const NUM_RAYS := 8
-const VELOCIDADE_AGENTE := 8.0
 const DURACAO_CICLO := 45.0
 const CAMINHO_REDE := "res://assets/melhor_rede_fase5.json"
 const COR_GLOW := Color(0.2, 0.8, 1.0)
 const COR_CARREGANDO := Color(1.0, 0.5, 0.0)
-const RAIO_COLETA := 2.0
+
+# layer 1 = estaticos (prateleiras, chao), layer 2 = agentes.
+# Os agentes precisam colidir entre si E se enxergar nos raycasts: e disso
+# que depende a demonstracao de coordenacao descentralizada.
+const MASCARA_PERCEPCAO := 1 | 2
 
 @export var alvo: Node3D
 @export var zona_entrega: Node3D
@@ -31,16 +43,15 @@ func _ready() -> void:
 	if not rede.carregar(CAMINHO_REDE):
 		push_error("AgenteIA [%s]: falha ao carregar rede neural" % name)
 
-	# layer 2: agentes nao colidem entre si, mas ainda respeitam estaticos (layer 1)
 	collision_layer = 2
-	collision_mask = 1
+	collision_mask = MASCARA_PERCEPCAO
 
 	for i in NUM_RAYS:
 		var ray := RayCast3D.new()
 		ray.name = "Ray%d" % i
 		ray.enabled = true
 		ray.exclude_parent = true
-		ray.collision_mask = 1
+		ray.collision_mask = MASCARA_PERCEPCAO
 		ray.target_position = Vector3(ALCANCE_RAY, 0.0, 0.0)
 		add_child(ray)
 		_raycasts.append(ray)
@@ -116,7 +127,8 @@ func _verificar_coleta_entrega() -> void:
 		return
 	var dx := alvo.global_position.x - global_position.x
 	var dz := alvo.global_position.z - global_position.z
-	if sqrt(dx * dx + dz * dz) >= RAIO_COLETA:
+	var raio: float = RAIO_ENTREGA if carregando_item else RAIO_COLETA
+	if sqrt(dx * dx + dz * dz) >= raio:
 		return
 	if not carregando_item:
 		carregando_item = true
@@ -154,12 +166,15 @@ func _montar_inputs() -> Array:
 		dx_ent = ddx / (de + 1e-6)
 		dz_ent = ddz / (de + 1e-6)
 
+	# velocity guarda a velocidade em unidades de mundo (ate VELOCIDADE_AGENTE).
+	# No treino o input 6 e o modulo do vetor JA normalizado, sempre <= 1 --
+	# sem dividir pela velocidade, este input ficava saturado em 1.0 sempre.
 	var vel_plano := Vector2(velocity.x, velocity.z)
-	var vel_mag := minf(vel_plano.length(), 1.0)
+	var vel_mag := minf(vel_plano.length() / VELOCIDADE_AGENTE, 1.0)
 
 	# heading no plano XZ: equivalente ao atan2(vel.y, vel.x) do pygame
 	var heading: float
-	if vel_plano.length() > 0.01:
+	if vel_plano.length() > 0.01 * VELOCIDADE_AGENTE:
 		heading = atan2(velocity.z, velocity.x)
 	else:
 		heading = atan2(dz, dx) if (dx != 0.0 or dz != 0.0) else 0.0

@@ -3,13 +3,20 @@ extends Node3D
 const COR_GLOW := Color(0.2, 0.8, 1.0)
 
 # [x_corredor, spawn_z, alvo_z, entrega_z]
-# centros dos corredores calculados: 12.53(1-2), 18.63(2-3), 24.73(3-4), 30.63(4-5)
+#
+# Fileiras em x = 10.2 / 20.0 / 29.8 com colisor de 2.0u -> dois corredores
+# livres de 7.8u, centrados em 15.1 e 24.9.
+#
+# Os agentes COMPARTILHAM corredor, e em cada um ha um par percorrendo
+# sentidos opostos (0 contra 1, e 3 contra 4). O encontro frontal e o que
+# exige coordenacao: em 7.8u cabem dois agentes de 1.2u lado a lado, mas so
+# se um deles ceder espaco. E esse comportamento que a fase 6 vai treinar.
 const CONF_AGENTES: Array = [
-	[12.53, -30.0, -55.0, -88.0],
-	[18.63, -65.0, -40.0, -85.0],
-	[24.73, -35.0, -60.0, -87.0],
-	[30.63, -70.0, -42.0, -86.0],
-	[18.63, -90.0, -55.0, -38.0],
+	[15.1, -30.0, -85.0, -32.0],
+	[15.1, -90.0, -35.0, -88.0],
+	[15.1, -60.0, -95.0, -45.0],
+	[24.9, -35.0, -88.0, -37.0],
+	[24.9, -88.0, -40.0, -86.0],
 ]
 
 func _ready() -> void:
