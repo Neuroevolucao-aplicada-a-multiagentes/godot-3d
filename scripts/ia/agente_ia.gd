@@ -92,6 +92,12 @@ func _physics_process(delta: float) -> void:
 		move_and_slide()
 		return
 
+	# Zera a componente vertical ao pousar. Sem isto, velocity.y mantinha o
+	# valor acumulado durante a queda, o corpo alternava entre "no chao" e
+	# "no ar" a cada frame, e o ramo acima anulava velocity.x/z -- o agente
+	# rodava a rede normalmente mas ficava parado no lugar.
+	velocity.y = 0.0
+
 	if rede.w1.is_empty() or alvo == null:
 		move_and_slide()
 		return
@@ -113,11 +119,17 @@ func _physics_process(delta: float) -> void:
 	if mostrar_debug:
 		var adx := alvo.global_position.x - global_position.x
 		var adz := alvo.global_position.z - global_position.z
-		print("AgenteIA[%s] y=%.1f dist2d=%.1f out=(%.3f,%.3f) carr=%s itens=%d" % [
+		var raio_min := 1.0
+		for r in inputs.slice(8):
+			raio_min = minf(raio_min, float(r))
+		print("AgenteIA[%s] pos=(%.1f,%.1f,%.1f) chao=%s dist2d=%.1f |v|=%.1f raio_min=%.2f colisoes=%d carr=%s itens=%d" % [
 			name,
-			global_position.y,
+			global_position.x, global_position.y, global_position.z,
+			str(is_on_floor()),
 			sqrt(adx * adx + adz * adz),
-			output[0], output[1],
+			Vector2(velocity.x, velocity.z).length(),
+			raio_min,
+			get_slide_collision_count(),
 			str(carregando_item),
 			itens_entregues
 		])

@@ -3,8 +3,8 @@
 [ext_resource type="PackedScene" uid="uid://dmu0giuk15in6" path="res://warehouse.tscn" id="2_0xm2m"]
 [ext_resource type="PackedScene" uid="uid://bs72ogkvdd7d6" path="res://addons/proto_controller/proto_controller.tscn" id="3_1bvp3"]
 [ext_resource type="PackedScene" uid="uid://c6wn5t6ycy76s" path="res://shelving.tscn" id="3_h2yge"]
-[ext_resource type="Script" path="res://scripts/ia/gerenciador_simulacao.gd" id="10_simctl"]
-[ext_resource type="Script" path="res://scripts/ia/colisores_prateleiras.gd" id="11_colis"]
+[ext_resource type="Script" uid="uid://bcy40yeya31jf" path="res://scripts/ia/gerenciador_simulacao.gd" id="10_simctl"]
+[ext_resource type="Script" uid="uid://bwrd32hqwsm3l" path="res://scripts/ia/colisores_prateleiras.gd" id="11_colis"]
 
 [sub_resource type="NavigationMesh" id="NavigationMesh_lquwl"]
 geometry_parsed_geometry_type = 1
@@ -46,7 +46,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.2906885, 0, -11.756972)
 [node name="Fileiras" type="CSGCombiner3D" parent="." unique_id=1751920263]
 
 [node name="Fileira" type="CSGCombiner3D" parent="Fileiras" unique_id=775878728]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0, 0, -2.1000001)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2.1000001)
 
 [node name="Shelving" parent="Fileiras/Fileira" unique_id=1323792161 instance=ExtResource("3_h2yge")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.2, 0, -28.599998)
