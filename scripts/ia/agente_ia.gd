@@ -24,6 +24,12 @@ const COR_CARREGANDO := Color(1.0, 0.5, 0.0)
 # que depende a demonstracao de coordenacao descentralizada.
 const MASCARA_PERCEPCAO := 1 | 2
 
+# Altura dos raycasts, em espaco local. Precisa coincidir com o centro da
+# capsula de colisao (Collider em y=1.275), e nao com a origem do no: esta
+# fica em y=-0.7 no mundo, abaixo das prateleiras, e os raios saiam por
+# baixo dos obstaculos sem detectar nada.
+const ALTURA_SENSOR := 1.275
+
 @export var alvo: Node3D
 @export var zona_entrega: Node3D
 @export var carregando_item: bool = false
@@ -52,6 +58,7 @@ func _ready() -> void:
 		ray.enabled = true
 		ray.exclude_parent = true
 		ray.collision_mask = MASCARA_PERCEPCAO
+		ray.position = Vector3(0.0, ALTURA_SENSOR, 0.0)
 		ray.target_position = Vector3(ALCANCE_RAY, 0.0, 0.0)
 		add_child(ray)
 		_raycasts.append(ray)
