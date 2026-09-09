@@ -2,21 +2,25 @@ extends Node3D
 
 const COR_GLOW := Color(0.2, 0.8, 1.0)
 
-# [x_corredor, spawn_z, alvo_z, entrega_z]
-#
 # Fileiras em x = 10.2 / 20.0 / 29.8 com colisor de 2.0u -> dois corredores
-# livres de 7.8u, centrados em 15.1 e 24.9.
+# longitudinais livres de 7.8u, centrados em 15.1 e 24.9, cortados por dois
+# corredores transversais em z ~ -73 e ~ -48.
 #
-# Os agentes COMPARTILHAM corredor, e em cada um ha um par percorrendo
-# sentidos opostos (0 contra 1, e 3 contra 4). O encontro frontal e o que
-# exige coordenacao: em 7.8u cabem dois agentes de 1.2u lado a lado, mas so
-# se um deles ceder espaco. E esse comportamento que a fase 6 vai treinar.
+# ENTREGA e UNICA e fica na saida do armazem, depois do fim das fileiras.
+# Todos os agentes convergem para la, o que produz o encontro entre eles -
+# exatamente o cenario de coordenacao descentralizada que o trabalho defende.
+const ENTREGA := Vector3(20.0, 0.5, -16.0)
+
+# [spawn(x, z), coleta(x, z)]
+# As coletas ficam espalhadas pelos dois corredores e em profundidades
+# diferentes. Os agentes 2 e 3 coletam no corredor OPOSTO ao que nascem,
+# entao precisam usar um corredor transversal para atravessar.
 const CONF_AGENTES: Array = [
-	[15.1, -30.0, -85.0, -32.0],
-	[15.1, -90.0, -35.0, -88.0],
-	[15.1, -60.0, -95.0, -45.0],
-	[24.9, -35.0, -88.0, -37.0],
-	[24.9, -88.0, -40.0, -86.0],
+	[Vector2(15.1, -30.0), Vector2(15.1, -85.0)],
+	[Vector2(24.9, -35.0), Vector2(24.9, -92.0)],
+	[Vector2(15.1, -60.0), Vector2(24.9, -62.0)],
+	[Vector2(24.9, -45.0), Vector2(15.1, -78.0)],
+	[Vector2(15.1, -90.0), Vector2(24.9, -30.0)],
 ]
 
 func _ready() -> void:
@@ -25,20 +29,21 @@ func _ready() -> void:
 		push_error("GerenciadorSimulacao: falha ao carregar npc.tscn")
 		return
 
+	# Marcador unico da entrega, compartilhado por todos os agentes. Maior que
+	# os de coleta para ficar legivel a distancia.
+	var entrega := _criar_marker(ENTREGA, 0.7)
+
 	for i in CONF_AGENTES.size():
 		var conf: Array = CONF_AGENTES[i]
-		var x: float    = conf[0]
-		var spawn_z: float   = conf[1]
-		var alvo_z: float    = conf[2]
-		var entrega_z: float = conf[3]
+		var spawn: Vector2 = conf[0]
+		var coleta: Vector2 = conf[1]
 
-		var alvo   := _criar_marker(Vector3(x, 0.5, alvo_z),   0.4)
-		var entrega := _criar_marker(Vector3(x, 0.5, entrega_z), 0.25)
+		var alvo := _criar_marker(Vector3(coleta.x, 0.5, coleta.y), 0.4)
 
 		var npc: Node3D = cena_npc.instantiate()
 		add_child(npc)
 		npc.name = "NPC_%d" % i
-		npc.global_position = Vector3(x, 0.5, spawn_z)
+		npc.global_position = Vector3(spawn.x, 0.5, spawn.y)
 
 		var corpo := npc.get_node("ProtoController") as AgenteIA
 		corpo.configurar(alvo, entrega)

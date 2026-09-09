@@ -60,29 +60,17 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.2, 0, -38.4)
 [node name="Shelving4" parent="Fileiras/Fileira" unique_id=1525595429 instance=ExtResource("3_h2yge")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.2, 0, -33.600002)
 
-[node name="Shelving5" parent="Fileiras/Fileira" unique_id=1144289112 instance=ExtResource("3_h2yge")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.2, 0, -48.5)
-
-[node name="Shelving6" parent="Fileiras/Fileira" unique_id=1020450470 instance=ExtResource("3_h2yge")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.2, 0, -43.7)
-
 [node name="Shelving7" parent="Fileiras/Fileira" unique_id=2047901589 instance=ExtResource("3_h2yge")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.2, 0, -58.300003)
 
 [node name="Shelving8" parent="Fileiras/Fileira" unique_id=1491521938 instance=ExtResource("3_h2yge")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.2, 0, -53.500004)
 
-[node name="Shelving9" parent="Fileiras/Fileira" unique_id=314486769 instance=ExtResource("3_h2yge")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.2, 0, -68.3)
-
 [node name="Shelving10" parent="Fileiras/Fileira" unique_id=349923478 instance=ExtResource("3_h2yge")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.2, 0, -63.5)
 
 [node name="Shelving11" parent="Fileiras/Fileira" unique_id=1965009495 instance=ExtResource("3_h2yge")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.2, 0, -78.100006)
-
-[node name="Shelving12" parent="Fileiras/Fileira" unique_id=2109998731 instance=ExtResource("3_h2yge")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.2, 0, -73.3)
 
 [node name="Shelving13" parent="Fileiras/Fileira" unique_id=1765731759 instance=ExtResource("3_h2yge")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.2, 0, -88.2)
@@ -111,29 +99,17 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.2, 0, -38.4)
 [node name="Shelving4" parent="Fileiras/Fileira2" unique_id=1963640412 instance=ExtResource("3_h2yge")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.2, 0, -33.600002)
 
-[node name="Shelving5" parent="Fileiras/Fileira2" unique_id=1651705926 instance=ExtResource("3_h2yge")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.2, 0, -48.5)
-
-[node name="Shelving6" parent="Fileiras/Fileira2" unique_id=794870445 instance=ExtResource("3_h2yge")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.2, 0, -43.7)
-
 [node name="Shelving7" parent="Fileiras/Fileira2" unique_id=1136666299 instance=ExtResource("3_h2yge")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.2, 0, -58.300003)
 
 [node name="Shelving8" parent="Fileiras/Fileira2" unique_id=1610086815 instance=ExtResource("3_h2yge")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.2, 0, -53.500004)
 
-[node name="Shelving9" parent="Fileiras/Fileira2" unique_id=1019798103 instance=ExtResource("3_h2yge")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.2, 0, -68.3)
-
 [node name="Shelving10" parent="Fileiras/Fileira2" unique_id=1268706814 instance=ExtResource("3_h2yge")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.2, 0, -63.5)
 
 [node name="Shelving11" parent="Fileiras/Fileira2" unique_id=1886832747 instance=ExtResource("3_h2yge")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.2, 0, -78.100006)
-
-[node name="Shelving12" parent="Fileiras/Fileira2" unique_id=535256998 instance=ExtResource("3_h2yge")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.2, 0, -73.3)
 
 [node name="Shelving13" parent="Fileiras/Fileira2" unique_id=1990462464 instance=ExtResource("3_h2yge")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.2, 0, -88.2)
@@ -162,29 +138,17 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.2, 0, -38.4)
 [node name="Shelving4" parent="Fileiras/Fileira3" unique_id=999211889 instance=ExtResource("3_h2yge")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.2, 0, -33.600002)
 
-[node name="Shelving5" parent="Fileiras/Fileira3" unique_id=493933269 instance=ExtResource("3_h2yge")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.2, 0, -48.5)
-
-[node name="Shelving6" parent="Fileiras/Fileira3" unique_id=2133641196 instance=ExtResource("3_h2yge")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.2, 0, -43.7)
-
 [node name="Shelving7" parent="Fileiras/Fileira3" unique_id=1738945470 instance=ExtResource("3_h2yge")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.2, 0, -58.300003)
 
 [node name="Shelving8" parent="Fileiras/Fileira3" unique_id=1485878354 instance=ExtResource("3_h2yge")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.2, 0, -53.500004)
 
-[node name="Shelving9" parent="Fileiras/Fileira3" unique_id=1337509967 instance=ExtResource("3_h2yge")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.2, 0, -68.3)
-
 [node name="Shelving10" parent="Fileiras/Fileira3" unique_id=1694504910 instance=ExtResource("3_h2yge")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.2, 0, -63.5)
 
 [node name="Shelving11" parent="Fileiras/Fileira3" unique_id=125789476 instance=ExtResource("3_h2yge")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.2, 0, -78.100006)
-
-[node name="Shelving12" parent="Fileiras/Fileira3" unique_id=734156989 instance=ExtResource("3_h2yge")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.2, 0, -73.3)
 
 [node name="Shelving13" parent="Fileiras/Fileira3" unique_id=2076533462 instance=ExtResource("3_h2yge")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.2, 0, -88.2)
