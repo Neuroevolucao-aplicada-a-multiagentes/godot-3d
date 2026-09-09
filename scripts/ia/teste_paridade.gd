@@ -45,6 +45,11 @@ func _ready() -> void:
 	else:
 		printerr("FALHOU: %d de %d checagens divergiram" % [_falhas, _checagens])
 
+	# Encerra sozinho para permitir execucao por linha de comando:
+	#   godot --headless --path . res://teste_paridade.tscn
+	if not Engine.is_editor_hint():
+		get_tree().quit(1 if _falhas > 0 else 0)
+
 
 func _carregar_fixture() -> Dictionary:
 	var arq := FileAccess.open(CAMINHO_FIXTURE, FileAccess.READ)
@@ -61,7 +66,12 @@ func _carregar_fixture() -> Dictionary:
 
 
 func _testar_arquitetura(fixture: Dictionary) -> void:
-	var esperada: Array = fixture["arquitetura"]
+	# O JSON entrega numeros como float, entao converte antes de comparar:
+	# [16.0, 32.0, 16.0, 2.0] != [16, 32, 16, 2] em GDScript.
+	var esperada := []
+	for v in (fixture["arquitetura"] as Array):
+		esperada.append(int(v))
+
 	var rede := RedeNeural.new()
 	if not rede.carregar(CAMINHO_REDE):
 		_reprovar("arquitetura", "nao foi possivel carregar a rede")
@@ -103,12 +113,12 @@ func _testar_forward(fixture: Dictionary) -> void:
 
 		if erro > TOLERANCIA:
 			_reprovar("forward caso %d" % i,
-				"erro %.2e | esperado (%.4f, %.4f) | obtido (%.4f, %.4f)"
+				"erro %.9f | esperado (%.6f, %.6f) | obtido (%.6f, %.6f)"
 				% [erro, esperada[0], esperada[1], saida[0], saida[1]])
 		else:
-			_aprovar("forward caso %d (erro %.2e)" % [i, erro])
+			_aprovar("forward caso %d (erro %.9f)" % [i, erro])
 
-	print("  pior erro no forward: %.2e" % pior)
+	print("  pior erro no forward: %.9f" % pior)
 
 
 func _testar_entradas_adimensionais(fixture: Dictionary) -> void:
