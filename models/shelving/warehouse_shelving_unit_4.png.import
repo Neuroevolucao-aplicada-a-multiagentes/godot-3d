@@ -3,10 +3,9 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bfsqvyh7h66f7"
-path.s3tc="res://.godot/imported/warehouse_shelving_unit_4.png-1aaca16481fbd8ba49e7a61ccccedd39.s3tc.ctex"
+path="res://.godot/imported/warehouse_shelving_unit_4.png-1aaca16481fbd8ba49e7a61ccccedd39.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
-"vram_texture": true
+"vram_texture": false
 }
 generator_parameters={
 "md5": "b63030fae68c61a14af3fa4c9655e64e"
@@ -15,11 +14,11 @@ generator_parameters={
 [deps]
 
 source_file="res://models/shelving/warehouse_shelving_unit_4.png"
-dest_files=["res://.godot/imported/warehouse_shelving_unit_4.png-1aaca16481fbd8ba49e7a61ccccedd39.s3tc.ctex"]
+dest_files=["res://.godot/imported/warehouse_shelving_unit_4.png-1aaca16481fbd8ba49e7a61ccccedd39.ctex"]
 
 [params]
 
-compress/mode=2
+compress/mode=0
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0

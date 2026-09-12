@@ -3,10 +3,9 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://ddhgpkp3jvhe0"
-path.s3tc="res://.godot/imported/warehouse_fbx_model_free_0.png-3ba25a0f641d2628435b869139d8187a.s3tc.ctex"
+path="res://.godot/imported/warehouse_fbx_model_free_0.png-3ba25a0f641d2628435b869139d8187a.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
-"vram_texture": true
+"vram_texture": false
 }
 generator_parameters={
 "md5": "7502c866d0537c20ffbe44eadc96150b"
@@ -15,11 +14,11 @@ generator_parameters={
 [deps]
 
 source_file="res://models/warehouse/warehouse_fbx_model_free_0.png"
-dest_files=["res://.godot/imported/warehouse_fbx_model_free_0.png-3ba25a0f641d2628435b869139d8187a.s3tc.ctex"]
+dest_files=["res://.godot/imported/warehouse_fbx_model_free_0.png-3ba25a0f641d2628435b869139d8187a.ctex"]
 
 [params]
 
-compress/mode=2
+compress/mode=0
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0
