@@ -2,6 +2,7 @@ extends CharacterBody3D
 
 @export var look_speed : float = 0.002
 @export var move_speed : float = 10.0
+@export var mostrar_corpo : bool = false
 
 @export_group("Input Actions")
 @export var input_left : String = "ui_left"
@@ -18,6 +19,13 @@ var look_rotation : Vector2
 func _ready():
 	look_rotation.y = rotation.y
 	look_rotation.x = head.rotation.x
+
+	# O corpo do jogador usa o mesmo modelo dos agentes, entao aparece em quadro
+	# e se confunde com eles. Escondido por padrao para a gravacao; marque
+	# mostrar_corpo no inspetor para ve-lo de novo.
+	var corpo := get_node_or_null("Sketchfab_Scene")
+	if corpo != null:
+		corpo.visible = mostrar_corpo
 
 func _unhandled_input(event: InputEvent) -> void:
 	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):

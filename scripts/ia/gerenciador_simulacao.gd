@@ -12,15 +12,21 @@ const COR_GLOW := Color(0.2, 0.8, 1.0)
 const ENTREGA := Vector3(20.0, 0.5, -16.0)
 
 # [spawn(x, z), coleta(x, z)]
-# As coletas ficam espalhadas pelos dois corredores e em profundidades
-# diferentes. Os agentes 2 e 3 coletam no corredor OPOSTO ao que nascem,
-# entao precisam usar um corredor transversal para atravessar.
+#
+# O alcance do raycast e de 16 u e os trechos de prateleira tem de 15 u a 25 u,
+# entao numa corrida longa ao lado de uma fileira o agente nunca enxerga o fim
+# da barreira e a politica reativa nao tem como contornar. Percursos acima de
+# 55 u nao completavam o ciclo; os daqui ficam entre 10 u e 35 u.
+#
+# Os pares 0 e 1 coletam dentro dos corredores transversais, onde a travessia
+# e em campo aberto. Nenhuma coleta fica ao sul de z -78, entao o trecho mais
+# longo de prateleira nao chega a ser percorrido.
 const CONF_AGENTES: Array = [
-	[Vector2(15.1, -30.0), Vector2(15.1, -85.0)],
-	[Vector2(24.9, -35.0), Vector2(24.9, -92.0)],
+	[Vector2(15.1, -45.0), Vector2(24.9, -47.0)],
+	[Vector2(24.9, -71.0), Vector2(15.1, -74.0)],
 	[Vector2(15.1, -60.0), Vector2(24.9, -62.0)],
 	[Vector2(24.9, -45.0), Vector2(15.1, -78.0)],
-	[Vector2(15.1, -90.0), Vector2(24.9, -30.0)],
+	[Vector2(15.1, -52.0), Vector2(24.9, -70.0)],
 ]
 
 func _ready() -> void:
