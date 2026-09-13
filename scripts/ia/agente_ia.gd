@@ -1,6 +1,11 @@
 class_name AgenteIA
 extends CharacterBody3D
 
+## Emitido ao alcancar o ponto de coleta. O gerenciador apaga o marcador.
+signal coletou
+## Emitido ao concluir a entrega. O gerenciador sorteia uma vaga nova.
+signal entregou
+
 # Area util apos o realinhamento das fileiras: x ~6..34 (28u),
 # z ~-98..-24 (74u) -> diagonal ~79u.
 #
@@ -108,6 +113,14 @@ func configurar(pacote: Node3D, entrega: Node3D) -> void:
 	_alvo_pacote = pacote
 	zona_entrega = entrega
 	alvo = _alvo_pacote
+
+
+## Reposiciona o ponto que o agente persegue. Chamado pelo gerenciador a cada
+## entrega concluida. Nao altera o contrato de entrada: a rede so enxerga a
+## direcao unitaria e a distancia normalizada ate o alvo, nunca a posicao.
+func mover_alvo_pacote(pos: Vector3) -> void:
+	if _alvo_pacote != null:
+		_alvo_pacote.global_position = pos
 
 func _physics_process(delta: float) -> void:
 	tempo_ciclo += delta
@@ -241,6 +254,7 @@ func _verificar_coleta_entrega() -> void:
 			_mat_glow.emission = COR_CARREGANDO
 			_mat_glow.albedo_color = COR_CARREGANDO
 		tempo_ciclo = 0.0
+		coletou.emit()
 	else:
 		carregando_item = false
 		itens_entregues += 1
@@ -249,6 +263,7 @@ func _verificar_coleta_entrega() -> void:
 			_mat_glow.emission = COR_GLOW
 			_mat_glow.albedo_color = COR_GLOW
 		tempo_ciclo = 0.0
+		entregou.emit()
 
 func _montar_inputs() -> Array:
 	var pos := global_position
