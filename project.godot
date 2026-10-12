@@ -10,10 +10,14 @@ config_version=5
 
 [application]
 
-config/name="PI"
+config/name="Neuroevolução em Armazém"
 run/main_scene="uid://b1f4vko5jpvw8"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
+
+[display]
+
+window/size/mode=2
 
 [input]
 

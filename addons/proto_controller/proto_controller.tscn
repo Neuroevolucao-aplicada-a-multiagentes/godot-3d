@@ -8,6 +8,7 @@ radius = 0.6
 height = 1.2
 
 [node name="ProtoController" type="CharacterBody3D" unique_id=1940682395]
+collision_layer = 4
 script = ExtResource("1_ucva2")
 
 [node name="Sketchfab_Scene" parent="." unique_id=612614357 instance=ExtResource("2_wr06p")]

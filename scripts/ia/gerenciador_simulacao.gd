@@ -114,6 +114,11 @@ func _ao_entregar(agente: AgenteIA) -> void:
 
 
 func _ready() -> void:
+	# Direto no DisplayServer: pela Window, o binario de editor acrescentaria
+	# "(DEBUG)" ao titulo.
+	DisplayServer.window_set_title.call_deferred(
+		str(ProjectSettings.get_setting("application/config/name")))
+
 	var cena_npc := load("res://npc.tscn") as PackedScene
 	if cena_npc == null:
 		push_error("GerenciadorSimulacao: falha ao carregar npc.tscn")
@@ -140,7 +145,7 @@ func _ready() -> void:
 		var alvo := Marker3D.new()
 		add_child(alvo)
 		corpo.configurar(alvo, entrega)
-		corpo.mostrar_debug = (i == 0)
+		corpo.mostrar_debug = (i == 0) and "--log-agentes" in OS.get_cmdline_user_args()
 
 		_visual_do_agente[corpo] = _criar_marker(Vector3.ZERO, 0.4)
 		corpo.coletou.connect(_ao_coletar.bind(corpo))
@@ -179,3 +184,10 @@ func _criar_marker(pos: Vector3, raio: float) -> Marker3D:
 	marker.add_child(luz)
 
 	return marker
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_F11:
+		var tela := get_window()
+		tela.mode = (Window.MODE_MAXIMIZED if tela.mode == Window.MODE_FULLSCREEN
+			else Window.MODE_FULLSCREEN)
