@@ -21,8 +21,6 @@ const RAIO_ENTREGA := DIAGONAL_MAPA * 0.0324      # 35 / 1081
 const NUM_RAYS := 8
 const DURACAO_CICLO := 45.0
 const CAMINHO_REDE := "res://assets/melhor_rede_fase5.json"
-const COR_GLOW := Color(0.2, 0.8, 1.0)
-const COR_CARREGANDO := Color(1.0, 0.5, 0.0)
 
 # layer 1 = estaticos (prateleiras, chao), layer 2 = agentes.
 # Os agentes precisam colidir entre si E se enxergar nos raycasts: e disso
@@ -59,11 +57,17 @@ var rede: RedeNeural
 var tempo_ciclo: float = 0.0
 var itens_entregues: int = 0
 var desencalhes: int = 0
+# Quadros sem deslocamento apreciavel, para medir tempo travado.
+var quadros_sem_avancar: int = 0
+var quadros_avaliados: int = 0
 
 var _alvo_pacote: Node3D
 var _raycasts: Array[RayCast3D] = []
 var _ultimo_heading: float = 0.0
-var _mat_glow: StandardMaterial3D
+var _caixa: MeshInstance3D
+## Segundos parado ao coletar, enquanto a caixa passa para o robo.
+var pausa_coleta: float = 0.0
+var _tempo_pausa: float = 0.0
 var _pos_anterior := Vector3.ZERO
 var _tempo_travado := 0.0
 var _tempo_desencalhe := 0.0
@@ -88,26 +92,32 @@ func _ready() -> void:
 		add_child(ray)
 		_raycasts.append(ray)
 
-	_criar_visual_glow()
+	_criar_visual_carga()
 	_pos_anterior = global_position
 
-func _criar_visual_glow() -> void:
-	var esfera := SphereMesh.new()
-	esfera.radius = 0.22
-	esfera.height = 0.44
+func _criar_visual_carga() -> void:
+	# A caixa que o robo leva, visivel so entre a coleta e a entrega.
+	var malha := BoxMesh.new()
+	malha.size = Vector3(0.6, 0.42, 0.6)
+	var mat := StandardMaterial3D.new()
+	mat.albedo_color = Color(0.78, 0.6, 0.4)
+	mat.roughness = 0.9
+	_caixa = MeshInstance3D.new()
+	_caixa.mesh = malha
+	_caixa.material_override = mat
+	_caixa.position = Vector3(0.0, 1.95, 0.0)
+	_caixa.visible = false
+	add_child(_caixa)
 
-	_mat_glow = StandardMaterial3D.new()
-	_mat_glow.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	_mat_glow.emission_enabled = true
-	_mat_glow.emission = COR_GLOW
-	_mat_glow.emission_energy_multiplier = 5.0
-	_mat_glow.albedo_color = COR_GLOW
+## A caixa em cima do robo aparece quando a animacao de transferencia termina.
+func mostrar_carga(visivel: bool) -> void:
+	if _caixa != null:
+		_caixa.visible = visivel
 
-	var mesh_inst := MeshInstance3D.new()
-	mesh_inst.mesh = esfera
-	mesh_inst.material_override = _mat_glow
-	mesh_inst.position = Vector3(0.0, 2.1, 0.0)
-	add_child(mesh_inst)
+
+func posicao_carga() -> Vector3:
+	return _caixa.global_position if _caixa != null else global_position
+
 
 func configurar(pacote: Node3D, entrega: Node3D) -> void:
 	_alvo_pacote = pacote
@@ -141,6 +151,16 @@ func _physics_process(delta: float) -> void:
 
 	if rede.w1.is_empty() or alvo == null:
 		move_and_slide()
+		return
+
+	# Parado durante o carregamento. Sai antes da rede e da camada de
+	# desencalhe, para a parada nao ser tomada por travamento.
+	if _tempo_pausa > 0.0:
+		_tempo_pausa -= delta
+		velocity.x = 0.0
+		velocity.z = 0.0
+		move_and_slide()
+		_pos_anterior = global_position
 		return
 
 	var inputs := _montar_inputs()
@@ -192,6 +212,9 @@ func _atualizar_desencalhe(delta: float) -> void:
 	# Considera travado quem esta em contato com algo que nao e o chao e nao
 	# conseguiu se deslocar de forma apreciavel neste frame.
 	var avancou := _pos_anterior.distance_to(global_position) > DESLOCAMENTO_MINIMO
+	quadros_avaliados += 1
+	if not avancou:
+		quadros_sem_avancar += 1
 
 	if avancou or _tempo_desencalhe > 0.0:
 		_tempo_travado = 0.0
@@ -250,18 +273,15 @@ func _verificar_coleta_entrega() -> void:
 	if not carregando_item:
 		carregando_item = true
 		alvo = zona_entrega
-		if _mat_glow != null:
-			_mat_glow.emission = COR_CARREGANDO
-			_mat_glow.albedo_color = COR_CARREGANDO
+		_tempo_pausa = pausa_coleta
 		tempo_ciclo = 0.0
 		coletou.emit()
 	else:
 		carregando_item = false
 		itens_entregues += 1
 		alvo = _alvo_pacote
-		if _mat_glow != null:
-			_mat_glow.emission = COR_GLOW
-			_mat_glow.albedo_color = COR_GLOW
+		if _caixa != null:
+			_caixa.visible = false
 		tempo_ciclo = 0.0
 		entregou.emit()
 

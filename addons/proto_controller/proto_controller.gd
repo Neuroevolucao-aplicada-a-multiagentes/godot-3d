@@ -3,6 +3,8 @@ extends CharacterBody3D
 @export var look_speed : float = 0.002
 @export var move_speed : float = 10.0
 @export var mostrar_corpo : bool = false
+## Inclinacao da camera ao abrir, em graus. Negativo olha para baixo.
+@export var inclinacao_inicial_graus : float = 0.0
 
 @export_group("Input Actions")
 @export var input_left : String = "ui_left"
@@ -11,12 +13,15 @@ extends CharacterBody3D
 @export var input_back : String = "ui_down"
 
 var mouse_captured : bool = false
+## Quando verdadeiro, quem move a camera e o gerenciador da cena.
+var automatico : bool = false
 var look_rotation : Vector2
 
 @onready var head: Node3D = $Head
 @onready var camera: Camera3D = $Head/SpringArm3D/Camera3D
 
 func _ready():
+	head.rotation.x = deg_to_rad(inclinacao_inicial_graus)
 	look_rotation.y = rotation.y
 	look_rotation.x = head.rotation.x
 
@@ -33,10 +38,12 @@ func _unhandled_input(event: InputEvent) -> void:
 	if Input.is_key_pressed(KEY_ESCAPE):
 		release_mouse()
 
-	if mouse_captured and event is InputEventMouseMotion:
+	if mouse_captured and not automatico and event is InputEventMouseMotion:
 		rotate_look(event.relative)
 
 func _physics_process(delta: float) -> void:
+	if automatico:
+		return
 	handle_movement()
 	move_and_slide()
 
@@ -82,3 +89,11 @@ func capture_mouse():
 func release_mouse():
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	mouse_captured = false
+
+
+## Devolve o controle ao jogador a partir da posicao em que a camera parou.
+func retomar_controle() -> void:
+	automatico = false
+	look_rotation.y = rotation.y
+	look_rotation.x = head.rotation.x
+
