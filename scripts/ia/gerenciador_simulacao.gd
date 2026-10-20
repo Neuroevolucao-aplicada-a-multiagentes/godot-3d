@@ -60,7 +60,7 @@ const ZS_VAGAS: Array = [
 ]
 
 const SEMENTE := 7
-const DISTANCIA_MAX_VAGA := 40.0
+const DISTANCIA_MAX_VAGA := 60.0
 
 var _vagas: Array = []
 # Distancia entre a face da prateleira e o ponto que o robo persegue. O
